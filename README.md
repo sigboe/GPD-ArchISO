@@ -14,7 +14,7 @@ https://github.com/sigboe/GPD-Arch-LUKS-LVM/wiki
 
 ## What works?
 
-Most things work, expect 
+Most things work, if not mentioned it is likely that it works.
 
 - [x] Readable terminal shortly after bootloader
 - [x] Multitouch 
