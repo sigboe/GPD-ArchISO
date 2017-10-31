@@ -54,7 +54,7 @@ make_pacman_conf() {
 # Base installation, plus needed packages (airootfs)
 make_basefs() {
     setarch ${arch} mkarchiso ${verbose} -w "${work_dir}/${arch}" -C "${work_dir}/pacman.conf" -D "${install_dir}" init
-    setarch ${arch} mkarchiso ${verbose} -w "${work_dir}/${arch}" -C "${work_dir}/pacman.conf" -D "${install_dir}" -p "haveged intel-ucode memtest86+ mkinitcpio-nfs-utils nbd zsh" install
+    setarch ${arch} mkarchiso ${verbose} -w "${work_dir}/${arch}" -C "${work_dir}/pacman.conf" -D "${install_dir}" -p "haveged intel-ucode memtest86+ mkinitcpio-nfs-utils nbd zsh linux-jwrdegoede linux-jwrdegoede-docs linux-jwrdegoede-headers" install
 }
 
 # Additional packages (airootfs)
@@ -86,7 +86,7 @@ make_setup_mkinitcpio() {
       gpg --export ${gpg_key} >${work_dir}/gpgkey
       exec 17<>${work_dir}/gpgkey
     fi
-    ARCHISO_GNUPG_FD=${gpg_key:+17} setarch ${arch} mkarchiso ${verbose} -w "${work_dir}/${arch}" -C "${work_dir}/pacman.conf" -D "${install_dir}" -r 'mkinitcpio -c /etc/mkinitcpio-archiso.conf -k /boot/vmlinuz-linux -g /boot/archiso.img' run
+    ARCHISO_GNUPG_FD=${gpg_key:+17} setarch ${arch} mkarchiso ${verbose} -w "${work_dir}/${arch}" -C "${work_dir}/pacman.conf" -D "${install_dir}" -r 'mkinitcpio -k /boot/vmlinuz-linux-jwrdegoede -c /etc/mkinitcpio-archiso.conf -g /boot/initramfs-linux-jwrdegoede.img' run
     if [[ ${gpg_key} ]]; then
       exec 17<&-
     fi
@@ -97,7 +97,6 @@ make_customize_airootfs() {
     cp -af ${script_path}/airootfs ${work_dir}/${arch}
     mkdir -p ${work_dir}/${arch}/airootfs/lib/firmware/brcm/
     cp ${script_path}/wififw/* ${work_dir}/${arch}/airootfs/lib/firmware/brcm/
-
 
     curl -o ${work_dir}/${arch}/airootfs/etc/pacman.d/mirrorlist 'https://www.archlinux.org/mirrorlist/?country=all&protocol=http&use_mirror_status=on'
 
@@ -110,8 +109,8 @@ make_customize_airootfs() {
 # Prepare kernel/initramfs ${install_dir}/boot/
 make_boot() {
     mkdir -p ${work_dir}/iso/${install_dir}/boot/${arch}
-    cp ${work_dir}/${arch}/airootfs/boot/archiso.img ${work_dir}/iso/${install_dir}/boot/${arch}/archiso.img
-    cp ${work_dir}/${arch}/airootfs/boot/vmlinuz-linux ${work_dir}/iso/${install_dir}/boot/${arch}/vmlinuz
+    cp ${work_dir}/${arch}/airootfs/boot/initramfs-linux-jwrdegoede.img ${work_dir}/iso/${install_dir}/boot/${arch}/archiso.img
+    cp ${work_dir}/${arch}/airootfs/boot/vmlinuz-linux-jwrdegoede ${work_dir}/iso/${install_dir}/boot/${arch}/vmlinuz
 }
 
 # Add other aditional/extra files to ${install_dir}/boot/
