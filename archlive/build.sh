@@ -94,6 +94,9 @@ make_setup_mkinitcpio() {
 # Customize installation (airootfs)
 make_customize_airootfs() {
     cp -af ${script_path}/airootfs ${work_dir}/${arch}
+    mkdir -p ${work_dir}/${arch}/airootfs/lib/firmware/brcm/
+    cp ${script_path}/wififw/* ${work_dir}/${arch}/airootfs/lib/firmware/brcm/
+
 
     curl -o ${work_dir}/${arch}/airootfs/etc/pacman.d/mirrorlist 'https://www.archlinux.org/mirrorlist/?country=all&protocol=http&use_mirror_status=on'
 
