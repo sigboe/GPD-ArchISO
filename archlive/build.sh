@@ -80,6 +80,7 @@ make_setup_mkinitcpio() {
     cp /usr/lib/initcpio/install/archiso_kms ${work_dir}/${arch}/airootfs/etc/initcpio/install
     cp /usr/lib/initcpio/archiso_shutdown ${work_dir}/${arch}/airootfs/etc/initcpio
     cp ${script_path}/mkinitcpio.conf ${work_dir}/${arch}/airootfs/etc/mkinitcpio-archiso.conf
+    cp ${script_path}/vconsole.conf ${work_dir}/${arch}/airootfs/etc/vconsole.conf
     gnupg_fd=
     if [[ ${gpg_key} ]]; then
       gpg --export ${gpg_key} >${work_dir}/gpgkey
