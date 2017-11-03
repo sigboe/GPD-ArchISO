@@ -5,7 +5,7 @@ https://github.com/sigboe/GPD-Arch-LUKS-LVM/wiki
 
 ## Todo
 
-- [ ] Custom Arch ISO with WiFi and repository already set up
+- [x] Custom Arch ISO with WiFi and repository already set up
 - [ ] Improve guide
 - [ ] More improvements to the installation
 - [ ] Install Gnome
@@ -30,3 +30,22 @@ Most things work, if not mentioned it is likely that it works.
 - [ ] Audio over HDMI
 - [ ] Displayport/HDMI over USB-C
 - [ ] Hibernation
+
+## Building the ISO
+
+### Dependencies
+
+    pacman -S arch-install-scripts dosfstools libisoburn lynx make squashfs-tools
+
+If you want to build the ISO on another platform than Arch Linux I suggest doing it in a VM or a Docker running Arch. It should work in distros based on arch, but this is not supported.
+
+### Procedure
+
+The files are very sensitive to file permission changes, so unfortunately you need to do everything as root (even git clone). This is a wontfix issue even upstream.
+
+    sudo su
+    cd
+    git clone https://github.com/sigboe/GPD-Arch-LUKS-LVM.git
+    cd GPD-Arch-LUKS-LVM/archlive
+    mkdir out
+    ./build.sh -v
