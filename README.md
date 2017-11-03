@@ -1,4 +1,4 @@
-# GPD Pocket Arch Linux Full disk enxryption
+# GPD Pocket Arch Linux Full disk encryption
 Tutorial how to install Arch Linux with (almost) full disk encryption using LUKS and LVM on GPD Pocket
 
 https://github.com/sigboe/GPD-Arch-LUKS-LVM/wiki
