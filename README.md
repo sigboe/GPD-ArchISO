@@ -49,3 +49,10 @@ The files are very sensitive to file permission changes, so unfortunately you ne
     cd GPD-Arch-LUKS-LVM/archlive
     mkdir out
     ./build.sh -v
+
+## Credits 
+
+[emanuelduss](https://emanuelduss.ch/2016/03/arch-linux-installation-gpt-luks-lvm-i3/) as basis for partitioning, encryption and bootloader.  
+@jwrdegoede for making the kernel  
+[njkli](https://github.com/njkli/) for compiling the kernel and updating it  
+@joshskidmore lots of help, inspirations and awesome commits  
