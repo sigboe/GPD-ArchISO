@@ -6,9 +6,10 @@ https://github.com/sigboe/GPD-Arch-LUKS-LVM/wiki
 ## Todo
 
 - [x] Custom Arch ISO with WiFi and repository already set up
-- [ ] Improve guide
-- [ ] More improvements to the installation
-- [ ] Install Gnome
+- [ ] Integrate in the ISO, easily usable while installing
+- [x] Improve guide
+- [x] More improvements to the installation
+- [x] Install Gnome
 - [ ] Install KDE
 - [ ] Other optional software
 
@@ -41,7 +42,7 @@ If you want to build the ISO on another platform than Arch Linux I suggest doing
 
 ### Procedure
 
-The files are very sensitive to file permission changes, so unfortunately you need to do everything as root (even git clone). This is a wontfix issue even upstream.
+The files are very sensitive to file permission changes, so unfortunately you need to do everything as root (even git clone). This may be fixed upstream later.
 
     sudo su
     cd
@@ -49,6 +50,14 @@ The files are very sensitive to file permission changes, so unfortunately you ne
     cd GPD-Arch-LUKS-LVM/archlive
     mkdir out
     ./build.sh -v
+    
+#### Cleanup
+
+You need to clean up after the script before running it again. You need to `rm -rf work`. **Make sure** you do this in the **correct directory** because you do run it with root permissions. 
+
+If you exited the script during execution you may end up with files that are mounted inside work. This will prevent you from deleting work. Then you may run
+
+    umount --recursive work
 
 ## Credits 
 
