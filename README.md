@@ -6,7 +6,7 @@ https://github.com/sigboe/GPD-Arch-LUKS-LVM/wiki
 ## Todo
 
 - [x] Custom Arch ISO with WiFi and repository already set up
-- [ ] Integrate in the ISO, easily usable while installing
+- [ ] Integrate guide in the ISO
 - [x] Improve guide
 - [x] More improvements to the installation
 - [x] Install Gnome
