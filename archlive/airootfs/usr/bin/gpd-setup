@@ -22,10 +22,14 @@ set_consolefont() {
         echo "FONT=latarcyrheb-sun32" > /mnt/etc/vconsole.conf
 }
 
+install_gpd() {
+        arch-chroot /mnt pacman -Syyu --force gpd-pocket-support
+}
 
 
 if [[ ${EUID} -ne 0 ]]; then
     echo "This script must be run as root."
+    exit 1
 fi
 
 { add_repo && echo "Added ${reponame} to /mnt/etc/pacman.conf"; } || { echo "Unable to add ${reponame} to /mnt/etc/pacman.conf"; }
@@ -35,3 +39,5 @@ fi
 { blacklist_pcspkr && echo "Successfully blacklisted pcspkr"; } || { echo "Unable to blacklist pcspkr, please add pcspkr to blacklisted kernel modules manually."; }
 
 { set_consolefont && echo "Successfully set the consolefont."; } || { echo "Unable to set the consolefont, please see archwiki page on GPD Pocket."; }
+
+{ install_gpd && echo "Successfully install GPD specific packages."; } || { echo "Unable to install packages, please see archwiki page on GPD Pocket."; }
