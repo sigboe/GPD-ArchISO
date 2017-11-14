@@ -1,43 +1,83 @@
 #!/bin/bash
 
 reponame=njkli
+volume=/mnt
 
-if [[ "${reponame}" = njkli ]]; then repo="[gpd-pocket]\nSigLevel = Optional TrustAll\nServer = https://github.com/njkli/\$repo/releases/download/\$arch" ; fi
+_usage () {
+        echo "usage ${0} [options]"
+        echo
+        echo " General options:"
+        echo "    -m <absolute_path> Sets what mountpoint to run against."
+        echo "                       Only useful if you mounted the installation"
+        echo "                       somewhere else than /mnt"
+        echo "                       Default: /mnt"
+        echo "    -h                 This help message"
+        exit "${1}"
+}
 
 add_repo() {
-        echo "${repo}" >> /mnt/etc/pacman.conf
+        mkdir -p ${volume}/etc && \
+        echo -e "${repo}" >> ${volume}/etc/pacman.conf && \
+        echo "Added ${reponame} to ${volume}/etc/pacman.conf" || \
+        echo "Unable to add ${reponame} to ${volume}/etc/pacman.conf"
 }
 
 set_settings() {
-        cp /etc/defaults/tlp /mnt/etc/defaults/tlp
-        cp /etc/defaults/gpd-fan /mnt/etc/defaults/gpd-fan
+        mkdir -p ${volume}/etc/default && cp /etc/default/tlp ${volume}/etc/default/tlp && \
+        mkdir -p /mnt/etc/default && cp /etc/default/gpd-fan ${volume}/etc/default/gpd-fan && \
+        echo "Successfully defined default settings" || \
+        echo "Unable to defined default settings for tlp and gpd-fan. Please see archwiki page on GPD Pocket."
 }
 
 blacklist_pcspkr() {
-        echo "blacklist pcspkr" > /mnt/etc/modprobe.d/nobeep.conf
+        mkdir -p ${volume}/etc/modprobe.d && \
+        echo "blacklist pcspkr" > ${volume}/etc/modprobe.d/nobeep.conf && \
+        echo "Successfully blacklisted pcspkr" || \
+        echo "Unable to blacklist pcspkr, please add pcspkr to blacklisted kernel modules manually."
 }
 
 set_consolefont() {
-        sed -i 's/HOOKS=.*"/HOOKS=\"consolefont base udev autodetect keyboard keymap modconf block encrypt lvm2 filesystems fsck\"/g' /mnt/etc/mkinitcpio.conf
-        echo "FONT=latarcyrheb-sun32" > /mnt/etc/vconsole.conf
+        echo "FONT=latarcyrheb-sun32" > ${volume}/etc/vconsole.conf && \
+        sed -i 's/HOOKS=.*"/HOOKS=\"consolefont base udev autodetect keyboard keymap modconf block encrypt lvm2 filesystems fsck\"/g' ${volume}/etc/mkinitcpio.conf && \
+        echo "Successfully set the consolefont." || \
+        echo "Unable to set the consolefont, please see archwiki page on GPD Pocket."
 }
 
 install_gpd() {
-        arch-chroot /mnt pacman -Syyu --force gpd-pocket-support
+        arch-chroot ${volume} pacman -Syyu --force gpd-pocket-support && \
+        echo "Successfully install GPD specific packages." || \
+        echo "Unable to install packages, please see archwiki page on GPD Pocket."
 }
 
 
 if [[ ${EUID} -ne 0 ]]; then
     echo "This script must be run as root."
+    _usage 1
+fi
+
+if ! mount | grep -qs "on ${volume} type"; then
+    echo "${volume} is not mounted."
     exit 1
 fi
 
-{ add_repo && echo "Added ${reponame} to /mnt/etc/pacman.conf"; } || { echo "Unable to add ${reponame} to /mnt/etc/pacman.conf"; }
+if [[ "${reponame}" = njkli ]]; then
+    repo="[gpd-pocket]\nSigLevel = Optional TrustAll\nServer = https://github.com/njkli/\$repo/releases/download/\$arch"
+fi
 
-{ set_settings && echo "Successfully defined default settings"; } || { echo "Unable to defined default settings for tlp and gpd-fan. Please see archwiki page on GPD Pocket."; }
+while getopts 'm:h' arg; do
+    case "${arg}" in
+        m) volume="${OPTARG}" ;;
+        h) _usage 0 ;;
+        *)
+          echo "Invalid argument '${arg}'"
+          _usage 1
+          ;;
+    esac
+done
 
-{ blacklist_pcspkr && echo "Successfully blacklisted pcspkr"; } || { echo "Unable to blacklist pcspkr, please add pcspkr to blacklisted kernel modules manually."; }
 
-{ set_consolefont && echo "Successfully set the consolefont."; } || { echo "Unable to set the consolefont, please see archwiki page on GPD Pocket."; }
-
-{ install_gpd && echo "Successfully install GPD specific packages."; } || { echo "Unable to install packages, please see archwiki page on GPD Pocket."; }
+add_repo
+set_settings
+blacklist_pcspkr
+set_consolefont
+install_gpd
