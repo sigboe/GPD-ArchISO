@@ -15,6 +15,14 @@ _usage () {
         exit "${1}"
 }
 
+## the following methods use a try catch to display error messages.
+## {
+##      command1 && \
+##      command2 && \
+##      echo success || \
+##      echo fail
+## }
+
 add_repo() {
         mkdir -p ${volume}/etc && \
         echo -e "${repo}" >> ${volume}/etc/pacman.conf && \
@@ -64,6 +72,8 @@ fi
 if [[ "${reponame}" = njkli ]]; then
     repo="[gpd-pocket]\nSigLevel = Optional TrustAll\nServer = https://github.com/njkli/\$repo/releases/download/\$arch"
 fi
+
+## while condition to catch arguments passed to the script
 
 while getopts 'm:h' arg; do
     case "${arg}" in
