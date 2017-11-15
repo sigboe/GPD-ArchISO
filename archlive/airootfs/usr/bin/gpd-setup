@@ -44,6 +44,7 @@ set_consolefont() {
 }
 
 install_gpd() {
+        pacstrap ${volume} alsa-lib && \
         arch-chroot ${volume} pacman -Syyu --force gpd-pocket-support && \
         echo "Successfully install GPD specific packages." || \
         echo "Unable to install packages, please see archwiki page on GPD Pocket."
