@@ -10,8 +10,8 @@ https://github.com/sigboe/GPD-Arch-LUKS-LVM/wiki
 - [x] Improve guide
 - [x] More improvements to the installation
 - [x] Install Gnome
-- [ ] Install KDE
-- [ ] Other optional software
+- [x] Install KDE
+- [x] Other optional software
 
 ## What works?
 
@@ -28,9 +28,9 @@ Most things work, if not mentioned it is likely that it works.
 - [x] Sleep/wake
 - [x] USB-C for data
 - [x] HDMI port
-- [ ] Audio over HDMI
+- [x] Audio over HDMI
 - [ ] Displayport/HDMI over USB-C
-- [ ] Hibernation
+- [ ] Hibernation (Its possible to do it unreliably)
 
 ## Building the ISO
 
