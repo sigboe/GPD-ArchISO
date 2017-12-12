@@ -36,7 +36,7 @@ Most things work, if not mentioned it is likely that it works.
 
 ### Dependencies
 
-    pacman -S archiso arch-install-scripts dosfstools libisoburn lynx make squashfs-tools
+    pacman -S archiso
 
 If you want to build the ISO on another platform than Arch Linux I suggest doing it in a VM or a Docker running Arch. It should work in distros based on arch, but this is not supported.
 
