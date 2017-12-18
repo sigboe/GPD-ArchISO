@@ -32,9 +32,7 @@ add_repo() {
 
 set_settings() {
         mkdir -p ${volume}/etc/default && cp /etc/default/tlp ${volume}/etc/default/tlp && \
-        mkdir -p ${volume}/etc/default && cp /etc/default/gpd-fan ${volume}/etc/default/gpd-fan && \
         echo "Successfully defined default settings" || \
-        echo "Unable to defined default settings for tlp and gpd-fan. Please see archwiki page on GPD Pocket."
 }
 
 blacklist_pcspkr() {
