@@ -1,6 +1,5 @@
 #
 # Maintainer: voobscout <voobscout@archlinux.info>
-# https://github.com/njkli/gpd-pocket
 #
 # Based on the linux package by:
 # Maintainer: Tobias Powalowski <tpowa@archlinux.org>
@@ -8,8 +7,8 @@
 
 pkgbase=linux-jwrdegoede
 _srcname=linux-sunxi-master
-pkgver=4.14.0rc5
-pkgrel=1
+pkgver=git
+pkgrel=2
 arch=('x86_64')
 url="https://www.kernel.org/"
 license=('GPL2')
@@ -46,6 +45,10 @@ prepare() {
   # cat "${srcdir}/config.${CARCH}" > ./.config
   # Also, there is no usb storage support, so:
   cat >> ./.config << EOL
+CONFIG_LIBERTAS=y
+CONFIG_LIBERTAS_SDIO=y
+CONFIG_MMC_SDHCI=y
+CONFIG_MMC_SDHCI_ACPI=y
 CONFIG_BLK_CGROUP=y
 CONFIG_BLK_DEV_INITRD=y
 CONFIG_BLK_SCSI_REQUEST=y
@@ -225,7 +228,6 @@ CONFIG_FB_VIA_DIRECT_PROCFS y
 CONFIG_VBOXGUEST n
 CONFIG_DRM_VBOXVIDEO n
 CONFIG_VBOXSF_FS n
-CONFIG_MTD_PHRAM=m
 EOL
 
   if [ "${_kernelname}" != "" ]; then
@@ -253,7 +255,7 @@ EOL
 build() {
   cd "${srcdir}/${_srcname}"
 
-  make -j 8 ${MAKEFLAGS} LOCALVERSION= bzImage modules
+  make ${MAKEFLAGS} LOCALVERSION= bzImage modules
 }
 
 pkgver() {
@@ -388,84 +390,4 @@ _package-headers() {
 
   # add dvb headers for http://mcentral.de/hg/~mrec/em28xx-new
   # in reference to:
-  # http://bugs.archlinux.org/task/13146
-  mkdir -p "${pkgdir}/usr/lib/modules/${_kernver}/build/drivers/media/dvb-frontends/"
-  cp drivers/media/dvb-frontends/lgdt330x.h "${pkgdir}/usr/lib/modules/${_kernver}/build/drivers/media/dvb-frontends/"
-  mkdir -p "${pkgdir}/usr/lib/modules/${_kernver}/build/drivers/media/i2c/"
-  cp drivers/media/i2c/msp3400-driver.h "${pkgdir}/usr/lib/modules/${_kernver}/build/drivers/media/i2c/"
-
-  # add dvb headers
-  # in reference to:
-  # http://bugs.archlinux.org/task/20402
-  mkdir -p "${pkgdir}/usr/lib/modules/${_kernver}/build/drivers/media/usb/dvb-usb"
-  cp drivers/media/usb/dvb-usb/*.h "${pkgdir}/usr/lib/modules/${_kernver}/build/drivers/media/usb/dvb-usb/"
-  mkdir -p "${pkgdir}/usr/lib/modules/${_kernver}/build/drivers/media/dvb-frontends"
-  cp drivers/media/dvb-frontends/*.h "${pkgdir}/usr/lib/modules/${_kernver}/build/drivers/media/dvb-frontends/"
-  mkdir -p "${pkgdir}/usr/lib/modules/${_kernver}/build/drivers/media/tuners"
-  cp drivers/media/tuners/*.h "${pkgdir}/usr/lib/modules/${_kernver}/build/drivers/media/tuners/"
-
-  # add xfs and shmem for aufs building
-  mkdir -p "${pkgdir}/usr/lib/modules/${_kernver}/build/fs/xfs"
-  mkdir -p "${pkgdir}/usr/lib/modules/${_kernver}/build/mm"
-  # removed in 3.17 series
-  # cp fs/xfs/xfs_sb.h "${pkgdir}/usr/lib/modules/${_kernver}/build/fs/xfs/xfs_sb.h"
-
-  # copy in Kconfig files
-  for i in $(find . -name "Kconfig*"); do
-    mkdir -p "${pkgdir}"/usr/lib/modules/${_kernver}/build/`echo ${i} | sed 's|/Kconfig.*||'`
-    cp ${i} "${pkgdir}/usr/lib/modules/${_kernver}/build/${i}"
-  done
-
-  # add objtool for external module building and enabled VALIDATION_STACK option
-  if [ -f tools/objtool/objtool ];  then
-      mkdir -p "${pkgdir}/usr/lib/modules/${_kernver}/build/tools/objtool"
-      cp -a tools/objtool/objtool ${pkgdir}/usr/lib/modules/${_kernver}/build/tools/objtool/
-  fi
-
-  chown -R root.root "${pkgdir}/usr/lib/modules/${_kernver}/build"
-  find "${pkgdir}/usr/lib/modules/${_kernver}/build" -type d -exec chmod 755 {} \;
-
-  # strip scripts directory
-  find "${pkgdir}/usr/lib/modules/${_kernver}/build/scripts" -type f -perm -u+w 2>/dev/null | while read binary ; do
-    case "$(file -bi "${binary}")" in
-      *application/x-sharedlib*) # Libraries (.so)
-        /usr/bin/strip ${STRIP_SHARED} "${binary}";;
-      *application/x-archive*) # Libraries (.a)
-        /usr/bin/strip ${STRIP_STATIC} "${binary}";;
-      *application/x-executable*) # Binaries
-        /usr/bin/strip ${STRIP_BINARIES} "${binary}";;
-    esac
-  done
-
-  # remove unneeded architectures
-  rm -rf "${pkgdir}"/usr/lib/modules/${_kernver}/build/arch/{alpha,arc,arm,arm26,arm64,avr32,blackfin,c6x,cris,frv,h8300,hexagon,ia64,m32r,m68k,m68knommu,metag,mips,microblaze,mn10300,openrisc,parisc,powerpc,ppc,s390,score,sh,sh64,sparc,sparc64,tile,unicore32,um,v850,xtensa}
-
-  # remove a files already in linux-docs package
-  rm -f "${pkgdir}/usr/lib/modules/${_kernver}/build/Documentation/kbuild/Kconfig.recursion-issue-01"
-  rm -f "${pkgdir}/usr/lib/modules/${_kernver}/build/Documentation/kbuild/Kconfig.recursion-issue-02"
-  rm -f "${pkgdir}/usr/lib/modules/${_kernver}/build/Documentation/kbuild/Kconfig.select-break"
-}
-
-_package-docs() {
-  pkgdesc="Kernel hackers manual - HTML documentation that comes with the ${pkgbase/linux/Linux} kernel"
-
-  cd "${srcdir}/${_srcname}"
-
-  mkdir -p "${pkgdir}/usr/lib/modules/${_kernver}/build"
-  cp -al Documentation "${pkgdir}/usr/lib/modules/${_kernver}/build"
-  find "${pkgdir}" -type f -exec chmod 444 {} \;
-  find "${pkgdir}" -type d -exec chmod 755 {} \;
-
-  # remove a file already in linux package
-  rm -f "${pkgdir}/usr/lib/modules/${_kernver}/build/Documentation/DocBook/Makefile"
-}
-
-pkgname=("${pkgbase}" "${pkgbase}-headers" "${pkgbase}-docs")
-for _p in ${pkgname[@]}; do
-  eval "package_${_p}() {
-    $(declare -f "_package${_p#${pkgbase}}")
-    _package${_p#${pkgbase}}
-  }"
-done
-
-# vim:set ts=8 sts=2 sw=2 et:
+  # http://bugs.archlinux.org/task/1314
