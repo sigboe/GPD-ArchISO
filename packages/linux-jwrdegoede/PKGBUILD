@@ -45,6 +45,10 @@ prepare() {
   # cat "${srcdir}/config.${CARCH}" > ./.config
   # Also, there is no usb storage support, so:
   cat >> ./.config << EOL
+CONFIG_LIBERTAS=y
+CONFIG_LIBERTAS_SDIO=y
+CONFIG_MMC_SDHCI=y
+CONFIG_MMC_SDHCI_ACPI=y
 CONFIG_BLK_CGROUP=y
 CONFIG_BLK_DEV_INITRD=y
 CONFIG_BLK_SCSI_REQUEST=y
