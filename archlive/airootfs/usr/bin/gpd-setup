@@ -46,7 +46,7 @@ blacklist_pcspkr() {
 
 set_consolefont() {
         echo "FONT=latarcyrheb-sun32" > ${volume}/etc/vconsole.conf && \
-        sed -i 's/HOOKS=.*"/HOOKS=\"consolefont base udev autodetect keyboard keymap modconf block encrypt lvm2 filesystems fsck\"/g' ${volume}/etc/mkinitcpio.conf && \
+        sed -i '/^HOOKS=/c\HOOKS=(consolefont base udev autodetect keyboard keymap modconf block encrypt lvm2 filesystems fsck)' ${volume}/etc/mkinitcpio.conf && \
         echo "Successfully set the consolefont." || \
         echo "Unable to set the consolefont, please see archwiki page on GPD Pocket."
 }
