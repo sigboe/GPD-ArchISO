@@ -46,8 +46,8 @@ The files are very sensitive to file permission changes, so unfortunately you ne
 
     sudo su
     cd
-    git clone https://github.com/sigboe/GPD-Arch-LUKS-LVM.git
-    cd GPD-Arch-LUKS-LVM/archlive
+    git clone https://github.com/sigboe/GPD-ArchISO.git
+    cd GPD-ArchISO/archlive
     mkdir out
     ./build.sh -v
     
