@@ -63,5 +63,6 @@ If you exited the script during execution you may end up with files that are mou
 
 [emanuelduss](https://emanuelduss.ch/2016/03/arch-linux-installation-gpt-luks-lvm-i3/) as basis for partitioning, encryption and bootloader.  
 @jwrdegoede for making the kernel  
-[njkli](https://github.com/njkli/) for compiling the kernel and updating it  
-@joshskidmore lots of help, inspirations and awesome commits  
+[njkli](https://github.com/njkli/)
+@joshskidmore lots of help, inspirations and awesome commits 
+@microdou for testing, finding bugs, and filing issues.
