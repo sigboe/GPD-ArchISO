@@ -1,6 +1,6 @@
 #!/bin/bash
 
-reponame=njkli
+reponame=gpd-pocket-arch
 volume=/mnt
 
 _usage () {
@@ -11,6 +11,11 @@ _usage () {
         echo "                       Only useful if you mounted the installation"
         echo "                       somewhere else than /mnt"
         echo "                       Default: /mnt"
+        echo " "
+        echo "    -r <repo_name>     Sets repo to install."
+        echo "                       supported repos gpd-pocket-arch,njkli"
+        echo "                       Default: gpd-pocket-arch"
+        echo " "
         echo "    -h                 This help message"
         exit "${1}"
 }
@@ -51,10 +56,16 @@ set_consolefont() {
 }
 
 install_gpd() {
-        pacstrap ${volume} alsa-lib && \
-        arch-chroot ${volume} pacman -Syyu --force gpd-pocket-support && \
-        echo "Successfully install GPD specific packages." || \
-        echo "Unable to install packages, please see archwiki page on GPD Pocket."
+        if [[ "${reponame}" = gpd-pocket-arch ]]; then
+            arch-chroot ${volume} pacman -Syyu --noconfirm gpd-pocket-support gpd-pocket-alsa-lib gpd-pocket-linux-jwrdegoede gpd-pocket-linux-jwrdegoede-docs gpd-pocket-linux-jwrdegoede-headers && \
+            echo "Successfully install GPD specific packages." || \
+            echo "Unable to install packages, please see archwiki page on GPD Pocket."
+        elif [[ "${reponame}" = njkli ]]; then
+             pacstrap ${volume} alsa-lib && \
+             arch-chroot ${volume} pacman -Syyu --force gpd-pocket-support && \
+             echo "Successfully install GPD specific packages." || \
+             echo "Unable to install packages, please see archwiki page on GPD Pocket."
+        fi
 }
 
 
@@ -68,14 +79,19 @@ if ! mount | grep -qs "on ${volume} type"; then
     exit 1
 fi
 
+if [[ "${reponame}" = gpd-pocket-arch ]]; then
+    repo="[gpd-pocket-arch]\nSigLevel = Never\nServer = https://github.com/joshskidmore/gpd-pocket-arch/raw/master"
+fi
+
 if [[ "${reponame}" = njkli ]]; then
     repo="[gpd-pocket]\nSigLevel = Optional TrustAll\nServer = https://github.com/njkli/\$repo/releases/download/\$arch"
 fi
 
 ## while condition to catch arguments passed to the script
 
-while getopts 'm:h' arg; do
+while getopts 'r:m:h' arg; do
     case "${arg}" in
+        r) reponame="${OPTARG}" ;;
         m) volume="${OPTARG}" ;;
         h) _usage 0 ;;
         *)

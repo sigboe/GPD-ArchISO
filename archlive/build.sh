@@ -54,7 +54,7 @@ make_pacman_conf() {
 # Base installation, plus needed packages (airootfs)
 make_basefs() {
     setarch ${arch} mkarchiso ${verbose} -w "${work_dir}/${arch}" -C "${work_dir}/pacman.conf" -D "${install_dir}" init
-    setarch ${arch} mkarchiso ${verbose} -w "${work_dir}/${arch}" -C "${work_dir}/pacman.conf" -D "${install_dir}" -p "haveged intel-ucode memtest86+ mkinitcpio-nfs-utils nbd zsh linux-jwrdegoede linux-jwrdegoede-docs linux-jwrdegoede-headers" install
+    setarch ${arch} mkarchiso ${verbose} -w "${work_dir}/${arch}" -C "${work_dir}/pacman.conf" -D "${install_dir}" -p "haveged intel-ucode memtest86+ mkinitcpio-nfs-utils nbd zsh gpd-pocket-linux-jwrdegoede gpd-pocket-linux-jwrdegoede-docs gpd-pocket-linux-jwrdegoede-headers" install
 }
 
 # Additional packages (airootfs)
@@ -86,7 +86,7 @@ make_setup_mkinitcpio() {
       gpg --export ${gpg_key} >${work_dir}/gpgkey
       exec 17<>${work_dir}/gpgkey
     fi
-    ARCHISO_GNUPG_FD=${gpg_key:+17} setarch ${arch} mkarchiso ${verbose} -w "${work_dir}/${arch}" -C "${work_dir}/pacman.conf" -D "${install_dir}" -r 'mkinitcpio -k /boot/vmlinuz-linux-jwrdegoede -c /etc/mkinitcpio-archiso.conf -g /boot/initramfs-linux-jwrdegoede.img' run
+    ARCHISO_GNUPG_FD=${gpg_key:+17} setarch ${arch} mkarchiso ${verbose} -w "${work_dir}/${arch}" -C "${work_dir}/pacman.conf" -D "${install_dir}" -r 'mkinitcpio -k /boot/vmlinuz-gpd-pocket-linux-jwrdegoede -c /etc/mkinitcpio-archiso.conf -g /boot/initramfs-gpd-pocket-linux-jwrdegoede.img' run
     if [[ ${gpg_key} ]]; then
       exec 17<&-
     fi
@@ -109,8 +109,8 @@ make_customize_airootfs() {
 # Prepare kernel/initramfs ${install_dir}/boot/
 make_boot() {
     mkdir -p ${work_dir}/iso/${install_dir}/boot/${arch}
-    cp ${work_dir}/${arch}/airootfs/boot/initramfs-linux-jwrdegoede.img ${work_dir}/iso/${install_dir}/boot/${arch}/archiso.img
-    cp ${work_dir}/${arch}/airootfs/boot/vmlinuz-linux-jwrdegoede ${work_dir}/iso/${install_dir}/boot/${arch}/vmlinuz
+    cp ${work_dir}/${arch}/airootfs/boot/initramfs-gpd-pocket-linux-jwrdegoede.img ${work_dir}/iso/${install_dir}/boot/${arch}/archiso.img
+    cp ${work_dir}/${arch}/airootfs/boot/vmlinuz-gpd-pocket-linux-jwrdegoede ${work_dir}/iso/${install_dir}/boot/${arch}/vmlinuz
 }
 
 # Add other aditional/extra files to ${install_dir}/boot/
