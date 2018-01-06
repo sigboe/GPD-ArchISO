@@ -6,12 +6,13 @@ https://github.com/sigboe/GPD-Arch-LUKS-LVM/wiki
 ## Todo
 
 - [x] Custom Arch ISO with WiFi and repository already set up
-- [ ] Integrate guide in the ISO
 - [x] Improve guide
 - [x] More improvements to the installation
 - [x] Install Gnome
 - [x] Install KDE
 - [x] Other optional software
+- [ ] ~~Integrate guide in the ISO~~ Iced for now
+
 
 ## What works?
 
@@ -21,7 +22,8 @@ Most things work, if not mentioned it is likely that it works.
 - [x] Multitouch 
 - [x] Wifi
 - [x] Bluetooth 
-- [x] Speaker 
+- [x] Speaker
+- [x] Microphone
 - [x] Headphones with autoswitch
 - [x] Battery manager
 - [x] Intel video driver
@@ -44,12 +46,14 @@ If you want to build the ISO on another platform than Arch Linux I suggest doing
 
 The files are very sensitive to file permission changes, so unfortunately you need to do everything as root (even git clone). This may be fixed upstream later.
 
-    sudo su
-    cd
-    git clone https://github.com/sigboe/GPD-ArchISO.git
-    cd GPD-ArchISO/archlive
-    mkdir out
-    ./build.sh -v
+```bash
+sudo su
+cd
+git clone https://github.com/sigboe/GPD-ArchISO.git
+cd GPD-ArchISO/archlive
+mkdir out
+./build.sh -v
+```
     
 #### Cleanup
 
