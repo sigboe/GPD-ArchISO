@@ -61,7 +61,7 @@ If you exited the script during execution you may end up with files that are mou
 
 ## Credits 
 
-[joshskidmore]() lots of help, inspirations and awesome commits  
+[joshskidmore](https://github.com/joshskidmore/) lots of help, inspirations and awesome commits  
 [emanuelduss](https://emanuelduss.ch/2016/03/arch-linux-installation-gpt-luks-lvm-i3/) as basis for partitioning, encryption and bootloader.  
 [jwrdegoede](https://github.com/jwrdegoede/) for making the kernel  
 [njkli](https://github.com/njkli/)For working on lots of the packages used after install  
