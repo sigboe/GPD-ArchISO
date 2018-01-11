@@ -2,30 +2,56 @@
 
 reponame=gpd-pocket-arch
 volume=/mnt
-version=0.1
+version=1
+_args=${arg}
 
 _usage () {
-        echo "usage ${0} [options]"
-        echo
-        echo " General options:"
-        echo "    -m <absolute_path> Sets what mountpoint to run against."
-        echo "                       Only useful if you mounted the installation"
-        echo "                       somewhere else than /mnt"
-        echo "                       Default: /mnt"
-        echo " "
-        echo "    -r <repo_name>     Sets repo to install."
-        echo "                       supported repos gpd-pocket-arch,njkli"
-        echo "                       Default: gpd-pocket-arch"
-        echo " "
-	echo "    -v                 Displays the version of the script"
-	echo " "
-        echo "    -h                 This help message"
-        exit "${1}"
+       echo "usage ${0} [options]"
+       echo
+       echo " General options:"
+       echo "    -m <absolute_path> Sets what mountpoint to run against."
+       echo "                       Only useful if you mounted the installation"
+       echo "                       somewhere else than /mnt"
+       echo "                       Default: /mnt"
+       echo " "
+       echo "    -r <repo_name>     Sets repo to install."
+       echo "                       supported repos gpd-pocket-arch,njkli"
+       echo "                       Default: gpd-pocket-arch"
+       echo " "
+       echo "    -v                 Displays the version of the script"
+       echo " "
+       echo "    -h                 This help message"
+       exit "${1}"
 }
 
 _version () {
-	echo "gpd-setup ${version}"
-	exit "${1}"
+       echo "gpd-setup ${version}"
+       exit "${1}"
+}
+
+_update () {
+#curl then overwrite it self then relaunch using the same parameters?
+#ask the user to relaunch maybe
+}
+
+check_version () {
+
+        #need to check if we have access to the internet
+
+        onlineversion=$(curl https://raw.githubusercontent.com/sigboe/GPD-ArchISO/master/archlive/airootfs/usr/bin/gpd-setup 2>/dev/null | grep "version=" | head -n 1 | cut -f 2 -d =)
+
+       if [[ "${onlineversion}" -gt "${version}" ]]; then
+           echo "Online version is newer."
+           echo "Online version is ${onlineversion}, local version is ${version}."
+           echo "Do you want to update to the newest version?"
+
+           #This may need to be reworked, have no idea if it works as I have in mind.
+           select yn in "Yes" "NO"; do
+             case $yn in
+               Yes ) _update ;;
+               No ) ;;
+             esac
+       fi
 }
 
 ## the following methods use a try catch to display error messages.
@@ -37,77 +63,76 @@ _version () {
 ## }
 
 add_repo() {
-        mkdir -p ${volume}/etc && \
-        echo -e "${repo}" >> ${volume}/etc/pacman.conf && \
-        echo "Added ${reponame} to ${volume}/etc/pacman.conf" || \
-        echo "Unable to add ${reponame} to ${volume}/etc/pacman.conf"
+       mkdir -p ${volume}/etc && \
+       echo -e "${repo}" >> ${volume}/etc/pacman.conf && \
+       echo "Added ${reponame} to ${volume}/etc/pacman.conf" || \
+       echo "Unable to add ${reponame} to ${volume}/etc/pacman.conf"
 }
 
 set_settings() {
-        mkdir -p ${volume}/etc/default && cp /etc/default/tlp ${volume}/etc/default/tlp && \
-        echo "Successfully defined default settings" || \
-	echo "Unable to defined default settings for tlp. Please see archwiki page on GPD Pocket."
+       mkdir -p ${volume}/etc/default && cp /etc/default/tlp ${volume}/etc/default/tlp && \
+       echo "Successfully defined default settings" || \
+       echo "Unable to defined default settings for tlp. Please see archwiki page on GPD Pocket."
 }
 
 blacklist_pcspkr() {
-        mkdir -p ${volume}/etc/modprobe.d && \
-        echo "blacklist pcspkr" > ${volume}/etc/modprobe.d/nobeep.conf && \
-        echo "Successfully blacklisted pcspkr" || \
-        echo "Unable to blacklist pcspkr, please add pcspkr to blacklisted kernel modules manually."
+       mkdir -p ${volume}/etc/modprobe.d && \
+       echo "blacklist pcspkr" > ${volume}/etc/modprobe.d/nobeep.conf && \
+       echo "Successfully blacklisted pcspkr" || \
+       echo "Unable to blacklist pcspkr, please add pcspkr to blacklisted kernel modules manually."
 }
 
 set_consolefont() {
-        echo "FONT=latarcyrheb-sun32" > ${volume}/etc/vconsole.conf && \
-        sed -i '/^HOOKS=/c\HOOKS=(consolefont base udev autodetect keyboard keymap modconf block encrypt lvm2 filesystems fsck)' ${volume}/etc/mkinitcpio.conf && \
-        echo "Successfully set the consolefont." || \
-        echo "Unable to set the consolefont, please see archwiki page on GPD Pocket."
+       echo "FONT=latarcyrheb-sun32" > ${volume}/etc/vconsole.conf && \
+       sed -i '/^HOOKS=/c\HOOKS=(consolefont base udev autodetect keyboard keymap modconf block encrypt lvm2 filesystems fsck)' ${volume}/etc/mkinitcpio.conf && \
+       echo "Successfully set the consolefont." || \
+       echo "Unable to set the consolefont, please see archwiki page on GPD Pocket."
 }
 
 install_gpd() {
-        if [[ "${reponame}" = gpd-pocket-arch ]]; then
-            arch-chroot ${volume} pacman -Syyu --noconfirm gpd-pocket-support gpd-pocket-alsa-lib gpd-pocket-linux-jwrdegoede gpd-pocket-linux-jwrdegoede-docs gpd-pocket-linux-jwrdegoede-headers && \
-            echo "Successfully install GPD specific packages." || \
-            echo "Unable to install packages, please see archwiki page on GPD Pocket."
-        elif [[ "${reponame}" = njkli ]]; then
-             pacstrap ${volume} alsa-lib && \
-             arch-chroot ${volume} pacman -Syyu --force gpd-pocket-support && \
-             echo "Successfully install GPD specific packages." || \
-             echo "Unable to install packages, please see archwiki page on GPD Pocket."
+       if [[ "${reponame}" = gpd-pocket-arch ]]; then
+           arch-chroot ${volume} pacman -Syyu --noconfirm gpd-pocket-support gpd-pocket-alsa-lib gpd-pocket-linux-jwrdegoede gpd-pocket-linux-jwrdegoede-docs gpd-pocket-linux-jwrdegoede-headers && \
+           echo "Successfully install GPD specific packages." || \
+           echo "Unable to install packages, please see archwiki page on GPD Pocket."
+       elif [[ "${reponame}" = njkli ]]; then
+           pacstrap ${volume} alsa-lib && \
+           arch-chroot ${volume} pacman -Syyu --force gpd-pocket-support && \
+           echo "Successfully install GPD specific packages." || \
+           echo "Unable to install packages, please see archwiki page on GPD Pocket."
         fi
 }
 
 
 if [[ ${EUID} -ne 0 ]]; then
-    echo "This script must be run as root."
-    _usage 1
+       echo "This script must be run as root."
+       _usage 1
 fi
 
 if ! mount | grep -qs "on ${volume} type"; then
-    echo "${volume} is not mounted."
-    exit 1
+       echo "${volume} is not mounted."
+       exit 1
 fi
 
 if [[ "${reponame}" = gpd-pocket-arch ]]; then
-    repo="[gpd-pocket-arch]\nSigLevel = Never\nServer = https://github.com/joshskidmore/gpd-pocket-arch/raw/master"
+       repo="[gpd-pocket-arch]\nSigLevel = Never\nServer = https://github.com/joshskidmore/gpd-pocket-arch/raw/master"
 fi
 
 if [[ "${reponame}" = njkli ]]; then
-    repo="[gpd-pocket]\nSigLevel = Optional TrustAll\nServer = https://github.com/njkli/\$repo/releases/download/\$arch"
+       repo="[gpd-pocket]\nSigLevel = Optional TrustAll\nServer = https://github.com/njkli/\$repo/releases/download/\$arch"
 fi
 
 ## while condition to catch arguments passed to the script
 
 while getopts 'r:m:vh' arg; do
-    case "${arg}" in
-        r) reponame="${OPTARG}" ;;
-        m) volume="${OPTARG}" ;;
-	v) _version 0 ;;
-        h) _usage 0 ;;
-        *)
-          echo "Invalid argument '${arg}'"
-          _usage 1
-          ;;
-    esac
+       case "${arg}" in
+           r) reponame="${OPTARG}" ;;
+           m) volume="${OPTARG}" ;;
+           v) _version 0 ;;
+           h) _usage 0 ;;
+           *)
+           echo "Invalid argument '${arg}'"
+           _usage 1
+       esac
 done
 
 
