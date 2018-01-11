@@ -2,6 +2,7 @@
 
 reponame=gpd-pocket-arch
 volume=/mnt
+version=0.1
 
 _usage () {
         echo "usage ${0} [options]"
@@ -16,8 +17,15 @@ _usage () {
         echo "                       supported repos gpd-pocket-arch,njkli"
         echo "                       Default: gpd-pocket-arch"
         echo " "
+	echo "    -v                 Displays the version of the script"
+	echo " "
         echo "    -h                 This help message"
         exit "${1}"
+}
+
+_version () {
+	echo "gpd-setup ${version}"
+	exit "${1}"
 }
 
 ## the following methods use a try catch to display error messages.
@@ -89,10 +97,11 @@ fi
 
 ## while condition to catch arguments passed to the script
 
-while getopts 'r:m:h' arg; do
+while getopts 'r:m:vh' arg; do
     case "${arg}" in
         r) reponame="${OPTARG}" ;;
         m) volume="${OPTARG}" ;;
+	v) _version 0 ;;
         h) _usage 0 ;;
         *)
           echo "Invalid argument '${arg}'"
