@@ -26,30 +26,36 @@ _usage () {
 
 _version () {
        echo "gpd-setup ${version}"
-       exit "${1}"
+       exit 0
 }
 
 _update () {
-#curl then overwrite it self then relaunch using the same parameters?
-#ask the user to relaunch maybe
+       curl https://raw.githubusercontent.com/sigboe/GPD-ArchISO/master/archlive/airootfs/usr/bin/gpd-setup 2>/dev/null -O /temp/gpd-setup
+       chmod 755 /tmp/gpd-setup
+       cp /tmp/gpd-setup /usr/bin/gpd-setup
+       /usr/bin/gpd-setup "${_args}"
+       exit 0
 }
 
 check_version () {
 
-        #need to check if we have access to the internet
-
-        onlineversion=$(curl https://raw.githubusercontent.com/sigboe/GPD-ArchISO/master/archlive/airootfs/usr/bin/gpd-setup 2>/dev/null | grep "version=" | head -n 1 | cut -f 2 -d =)
+       if  ping -c 1 8.8.8.8 > /dev/null 2>&1 ; then
+           onlineversion=$(curl https://raw.githubusercontent.com/sigboe/GPD-ArchISO/master/archlive/airootfs/usr/bin/gpd-setup 2>/dev/null | grep "version=" | head -n 1 | cut -f 2 -d =)
+       else
+           echo "Cant connect to the interenet."
+           exit 1
+       fi
 
        if [[ "${onlineversion}" -gt "${version}" ]]; then
-           echo "Online version is newer."
+           echo "There is a newer version online."
            echo "Online version is ${onlineversion}, local version is ${version}."
+           echo "The online version should match any changes in the Wiki guide."
            echo "Do you want to update to the newest version?"
 
-           #This may need to be reworked, have no idea if it works as I have in mind.
-           select yn in "Yes" "NO"; do
+           select yn in "Yes" "No"; do
              case $yn in
                Yes ) _update ;;
-               No ) ;;
+               No ) return ;;
              esac
        fi
 }
@@ -127,7 +133,7 @@ while getopts 'r:m:vh' arg; do
        case "${arg}" in
            r) reponame="${OPTARG}" ;;
            m) volume="${OPTARG}" ;;
-           v) _version 0 ;;
+           v) _version ;;
            h) _usage 0 ;;
            *)
            echo "Invalid argument '${arg}'"
